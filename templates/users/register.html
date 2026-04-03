@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h2 class="text-center mb-4"><i class="bi bi-person-plus"></i> Register</h2>
+            <form method="post" enctype="multipart/form-data" id="registerForm">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label fw-bold">{{ field.label }}</label>
+                    {{ field }}
+                    <div class="invalid-feedback" id="error-{{ field.name }}"></div>
+                    {% for error in field.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-dark w-100">Register</button>
+            </form>
+            <p class="text-center mt-3">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const usernameField = document.querySelector('[name="username"]');
+    const emailField = document.querySelector('[name="email"]');
+    const pw1 = document.querySelector('[name="password1"]');
+    const pw2 = document.querySelector('[name="password2"]');
+
+    function showError(field, msg) {
+        field.classList.add('is-invalid');
+        const fb = document.getElementById('error-' + field.name);
+        if (fb) fb.textContent = msg;
+    }
+    function clearError(field) {
+        field.classList.remove('is-invalid');
+        const fb = document.getElementById('error-' + field.name);
+        if (fb) fb.textContent = '';
+    }
+
+    if (usernameField) {
+        usernameField.addEventListener('blur', function() {
+            if (this.value.length < 3) { showError(this, 'Username must be at least 3 characters.'); return; }
+            clearError(this);
+            fetch('/check-username/?username=' + encodeURIComponent(this.value))
+                .then(r => r.json()).then(d => { if (d.exists) showError(usernameField, 'Username already taken.'); });
+        });
+    }
+
+    if (emailField) {
+        emailField.addEventListener('blur', function() {
+            if (!this.value.match(/^[^@]+@[^@]+\.[^@]+$/)) { showError(this, 'Enter a valid email.'); return; }
+            clearError(this);
+            fetch('/check-email/?email=' + encodeURIComponent(this.value))
+                .then(r => r.json()).then(d => { if (d.exists) showError(emailField, 'Email already registered.'); });
+        });
+    }
+
+    if (pw2) {
+        pw2.addEventListener('input', function() {
+            if (pw1.value !== pw2.value) showError(pw2, 'Passwords do not match.');
+            else clearError(pw2);
+        });
+    }
+});
+</script>
+{% endblock %}

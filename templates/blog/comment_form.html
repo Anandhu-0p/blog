@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Edit Comment{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h2 class="mb-4">Edit Comment</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.content }}
+                <button type="submit" class="btn btn-dark mt-2">Update Comment</button>
+                <a href="{% url 'post_detail' comment.post.pk %}" class="btn btn-outline-secondary mt-2">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
