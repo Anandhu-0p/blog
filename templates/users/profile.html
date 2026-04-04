@@ -9,10 +9,10 @@
                 <img src="{{ user.profile_picture.url }}" class="profile-pic mb-2" alt="Profile">
                 {% else %}
                 <div class="profile-pic bg-secondary d-inline-flex align-items-center justify-content-center text-white" style="font-size:2rem;">
-                    {{ user.username|first|upper }}
+                    {{ user.get_username|first|upper }}
                 </div>
                 {% endif %}
-                <h4>{{ user.username }}</h4>
+                <h4>{{ user.get_username }}</h4>
                 <p class="text-muted">Joined {{ user.date_joined|date:"M d, Y" }}</p>
             </div>
             <form method="post" enctype="multipart/form-data">
