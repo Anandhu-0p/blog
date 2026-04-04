@@ -13,10 +13,11 @@ def register_view(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, 'Registration successful!')
-            return redirect('post_list')
+            form.save()
+            messages.success(request, 'Registration successful! You can log in now.')
+            return redirect('login')
+        else:
+            messages.error(request, 'Registration failed. Please check your inputs.')
     else:
         form = UserRegistrationForm()
     return render(request, 'users/register.html', {'form': form})
